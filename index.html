@@ -1,0 +1,1710 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>المنظومة الرقمية - فوج الوفاء تلاغمة</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- مكتبة Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --primary-dark: #022c22;
+      --primary-forest: #064e3b;
+      --primary-emerald: #10b981;
+      --primary-glow: rgba(16, 185, 129, 0.28);
+      --accent-gold: #d4a373;
+      --accent-gold-dark: #b07d4b;
+      --surface-glass-card: rgba(255, 255, 255, 0.94);
+      --surface-glass-alt: rgba(248, 250, 252, 0.95);
+      --border-subtle: rgba(203, 213, 225, 0.7);
+      --border-focus: #10b981;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --radius-xl: 24px;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --shadow-sm: 0 4px 12px rgba(2, 44, 34, 0.08);
+      --shadow-card: 0 16px 36px -6px rgba(2, 44, 34, 0.28), 0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+      --shadow-interactive: 0 8px 24px rgba(16, 185, 129, 0.25);
+      --transition-smooth: all 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'IBM Plex Sans Arabic', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    h1, h2, h3, h4, .brand-title, .section-title, .badge, .btn-main, .sub-tab-btn, .clickable-card-title {
+      font-family: 'Alexandria', sans-serif;
+    }
+
+    body {
+      color: var(--text-main);
+      min-height: 100vh;
+      padding-bottom: 80px;
+      position: relative;
+      background-color: #022c22;
+      overflow-x: hidden;
+    }
+
+    /* خلفية متدرجة حديثة ومريحة للعين */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: 
+        radial-gradient(circle at 85% 15%, rgba(16, 185, 129, 0.15) 0%, transparent 40%),
+        linear-gradient(180deg, rgba(2, 44, 34, 0.92) 0%, rgba(6, 78, 59, 0.88) 50%, rgba(15, 23, 42, 0.96) 100%),
+        url('scouts-bg.jpg'),
+        url('611854587_122292779696025855_8406236870418649983_n.jpg');
+      background-size: cover;
+      background-position: center 30%;
+      background-attachment: fixed;
+      z-index: -1;
+    }
+
+    /* شريط الترويسة القيادي */
+    header {
+      background: rgba(2, 44, 34, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      color: white;
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 25px rgba(0, 0, 0, 0.35);
+      border-bottom: 2px solid rgba(212, 163, 115, 0.6);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-badge {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 2px solid var(--accent-gold);
+      box-shadow: 0 0 16px rgba(212, 163, 115, 0.45);
+      background-color: #fff;
+      background-image: url('logo.jpg'), url('464282308_122213569448025855_7153383657927096583_n.jpg');
+      background-size: cover;
+      background-position: center;
+      flex-shrink: 0;
+      transition: var(--transition-smooth);
+    }
+
+    .logo-badge:active {
+      transform: scale(0.92) rotate(-5deg);
+    }
+
+    .brand-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.2px;
+    }
+
+    .brand-subtitle {
+      font-size: 11px;
+      color: var(--accent-gold);
+      font-weight: 600;
+    }
+
+    .btn-logout {
+      background: rgba(239, 68, 68, 0.18);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #fca5a5;
+      padding: 8px 14px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-logout:active {
+      background: rgba(239, 68, 68, 0.4);
+      transform: scale(0.95);
+      color: #fff;
+    }
+
+    /* حاوية المحتوى */
+    .container {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 0 16px;
+    }
+
+    .screen { display: none; }
+    .screen.active { display: block; animation: smoothSlideUp 0.32s cubic-bezier(0.16, 1, 0.3, 1); }
+
+    @keyframes smoothSlideUp {
+      from { opacity: 0; transform: translateY(12px) scale(0.99); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* تصميم البطاقات والخانات */
+    .card {
+      background: var(--surface-glass-card);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: var(--radius-xl);
+      padding: 22px;
+      border: 1.5px solid rgba(255, 255, 255, 0.7);
+      margin-bottom: 22px;
+      box-shadow: var(--shadow-card);
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition-smooth);
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent-gold), var(--primary-emerald), var(--primary-forest));
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--primary-dark);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    /* التباعد المريح بين الخانات والحقول لمنع الالتصاق */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .form-group label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    /* خانات الإدخال: تلوين وتوهج ناعم عند الضغط واللمس */
+    .input-field {
+      width: 100%;
+      padding: 13px 16px;
+      border: 1.8px solid #cbd5e1;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      outline: none;
+      background: #ffffff;
+      color: var(--text-main);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+      transition: var(--transition-smooth);
+    }
+
+    .input-field:hover {
+      border-color: #94a3b8;
+    }
+
+    .input-field:focus {
+      border-color: var(--primary-emerald);
+      background: #f0fdf4;
+      box-shadow: 0 0 0 4px var(--primary-glow);
+      color: #064e3b;
+    }
+
+    /* الأزرار العامة */
+    .btn-main {
+      width: 100%;
+      background: linear-gradient(135deg, #065f46 0%, #022c22 100%);
+      color: #ffffff;
+      border: 1.5px solid var(--accent-gold);
+      padding: 14px 18px;
+      border-radius: var(--radius-md);
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 8px;
+      box-shadow: 0 6px 18px rgba(2, 44, 34, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-main:active {
+      transform: scale(0.97);
+      background: linear-gradient(135deg, #047857 0%, #064e3b 100%);
+      box-shadow: var(--shadow-interactive);
+      border-color: #ffffff;
+    }
+
+    .btn-sub {
+      background: #f1f5f9;
+      color: #334155;
+      border: 1.5px solid #e2e8f0;
+      padding: 9px 14px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-sub:active {
+      background: #e2e8f0;
+      transform: scale(0.95);
+    }
+
+    /* التبويبات العصرية السلسة */
+    .sub-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 22px;
+      overflow-x: auto;
+      background: rgba(226, 232, 240, 0.95);
+      padding: 7px;
+      border-radius: var(--radius-lg);
+      scrollbar-width: none;
+    }
+    .sub-tabs::-webkit-scrollbar { display: none; }
+
+    .sub-tab-btn {
+      flex: 1;
+      min-width: 135px;
+      padding: 11px 16px;
+      border: none;
+      background: transparent;
+      font-weight: 700;
+      font-size: 13px;
+      color: #64748b;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      text-align: center;
+      transition: var(--transition-smooth);
+      white-space: nowrap;
+    }
+
+    .sub-tab-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* عند الضغط والتحديد على التبويب: تلوين وتأثير ظل بارز */
+    .sub-tab-btn.active {
+      background: #ffffff;
+      color: var(--primary-forest);
+      box-shadow: 0 4px 14px rgba(2, 44, 34, 0.15);
+      border-bottom: 2.5px solid var(--primary-emerald);
+    }
+
+    /* بطاقات تفاعلية مستقلة (عوض التصاق الأسطر القديم) */
+    .interactive-item-card {
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition-smooth);
+      cursor: pointer;
+      position: relative;
+    }
+
+    /* تلوين الخانة بالكامل عند الضغط أو النقر */
+    .interactive-item-card:hover {
+      border-color: #cbd5e1;
+      transform: translateY(-2px);
+    }
+
+    .interactive-item-card:active {
+      background: #f0fdf4;
+      border-color: var(--primary-emerald);
+      transform: scale(0.985);
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.18);
+    }
+
+    /* بطاقة الكشاف الأنيقة الاحترافية */
+    .scout-card {
+      background: #ffffff;
+      border: 1.8px solid #e2e8f0;
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition-smooth);
+    }
+
+    .scout-card:active {
+      background: #ecfdf5;
+      border-color: var(--primary-emerald);
+      box-shadow: 0 8px 22px rgba(16, 185, 129, 0.2);
+    }
+
+    .scout-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .scout-info-main {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .scout-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #065f46, #022c22);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 16px;
+      border: 2px solid var(--accent-gold);
+      flex-shrink: 0;
+    }
+
+    .scout-badges-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    /* أزرار الحضور التفاعلية المتلونة عند الضغط */
+    .attendance-btn-group {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .att-btn {
+      padding: 10px 8px;
+      border-radius: var(--radius-md);
+      font-size: 12px;
+      font-weight: 700;
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      text-align: center;
+    }
+
+    .att-btn:active {
+      transform: scale(0.93);
+    }
+
+    .att-btn-present {
+      background: #dcfce7;
+      color: #166534;
+      border-color: #bbf7d0;
+    }
+    .att-btn-present:active, .att-btn-present.selected {
+      background: #16a34a;
+      color: #ffffff;
+      border-color: #15803d;
+      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.35);
+    }
+
+    .att-btn-absent {
+      background: #fee2e2;
+      color: #991b1b;
+      border-color: #fecaca;
+    }
+    .att-btn-absent:active, .att-btn-absent.selected {
+      background: #dc2626;
+      color: #ffffff;
+      border-color: #b91c1c;
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
+    }
+
+    .att-btn-excused {
+      background: #fef3c7;
+      color: #92400e;
+      border-color: #fde68a;
+    }
+    .att-btn-excused:active, .att-btn-excused.selected {
+      background: #d97706;
+      color: #ffffff;
+      border-color: #b45309;
+      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
+    }
+
+    /* الشارات الملونة */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .badge-ok { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+    .badge-warn { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+    .badge-err { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+    .badge-info { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+
+    /* الجداول المتجاوبة المنفصلة */
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 8px;
+      margin-top: 4px;
+    }
+
+    th {
+      text-align: right;
+      padding: 10px 14px;
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    td {
+      padding: 14px;
+      background: #ffffff;
+      border-top: 1px solid #f1f5f9;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 13px;
+      transition: var(--transition-smooth);
+    }
+
+    td:first-child { border-right: 1px solid #f1f5f9; border-radius: 0 var(--radius-md) var(--radius-md) 0; }
+    td:last-child { border-left: 1px solid #f1f5f9; border-radius: var(--radius-md) 0 0 var(--radius-md); }
+
+    tbody tr {
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    tbody tr:active td {
+      background-color: #f0fdf4;
+      border-color: var(--primary-emerald);
+      color: #064e3b;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 36px 16px;
+      color: #94a3b8;
+      font-size: 13px;
+    }
+
+    /* النافذة المنبثقة (Modal) */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal.active { display: flex; animation: fadeIn 0.25s ease-out; }
+
+    .modal-content {
+      background: white;
+      border-radius: var(--radius-xl);
+      width: 100%;
+      max-width: 480px;
+      padding: 24px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+      border: 1px solid #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- الترويسة القيادية -->
+  <header>
+    <div class="brand">
+      <div class="logo-badge"></div>
+      <div>
+        <div class="brand-title">فوج الوفاء - تلاغمة</div>
+        <div class="brand-subtitle" id="navRole">تأسس سنة 1993 • المنظومة الرقمية الموحدة</div>
+      </div>
+    </div>
+    <button class="btn-logout" id="logoutBtn" onclick="logout()" style="display: none;">تسجيل الخروج</button>
+  </header>
+
+  <div class="container">
+
+    <!-- 1. شاشة تسجيل الدخول -->
+    <div id="loginScreen" class="screen active">
+      <div class="card" style="max-width: 420px; margin: 30px auto; padding: 36px 26px; text-align: center;">
+        
+        <div style="width: 95px; height: 95px; margin: 0 auto 16px auto; border-radius: 50%; border: 3px solid var(--accent-gold); box-shadow: 0 0 24px rgba(212, 163, 115, 0.5); background-color: #fff; background-image: url('logo.jpg'), url('464282308_122213569448025855_7153383657927096583_n.jpg'); background-size: cover; background-position: center;"></div>
+        
+        <h2 style="font-size: 19px; font-weight: 800; margin-bottom: 4px; color: var(--primary-dark);">فوج الوفاء - تلاغمة</h2>
+        <p style="font-size: 13px; color: #64748b; margin-bottom: 24px;">الكشافة الإسلامية الجزائرية • فضاء القادة والأولياء</p>
+
+        <form id="loginForm" onsubmit="handleLogin(event)">
+          <div class="form-group" style="text-align: right; margin-bottom: 14px;">
+            <label>رقم الهاتف</label>
+            <input type="tel" id="userPhone" class="input-field" placeholder="05XXXXXXXX / 06XXXXXXXX" required dir="ltr" style="text-align: left;" value="0550000000">
+          </div>
+          <div class="form-group" style="text-align: right; margin-bottom: 20px;">
+            <label>كلمة المرور</label>
+            <input type="password" id="userPass" class="input-field" placeholder="••••••••" required dir="ltr" style="text-align: left;" value="123456">
+          </div>
+          <button type="submit" id="submitLoginBtn" class="btn-main">
+            <span>تسجيل الدخول للمنظومة</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 2. لوحة تحكم المحافظ العام -->
+    <div id="commissionerScreen" class="screen">
+      <div class="sub-tabs">
+        <button class="sub-tab-btn active" onclick="switchCommTab('commLeaders')">👮‍♂️ طاقم القادة</button>
+        <button class="sub-tab-btn" onclick="switchCommTab('commScouts')">👥 كل الكشافين</button>
+        <button class="sub-tab-btn" onclick="switchCommTab('commMeetings')">📅 اجتماعات القيادة</button>
+        <button class="sub-tab-btn" onclick="switchCommTab('commReports')">📑 تقارير الفوج</button>
+      </div>
+
+      <div id="commLeaders" class="comm-tab active">
+        <div class="card">
+          <div class="section-title">➕ تعيين وتثبيت قائد أو مسؤول جديد</div>
+          <form onsubmit="commCreateLeader(event)">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>الاسم واللقب</label>
+                <input type="text" id="clName" class="input-field" required>
+              </div>
+              <div class="form-group">
+                <label>رقم الهاتف (للدخول)</label>
+                <input type="tel" id="clPhone" class="input-field" required dir="ltr" style="text-align: left;">
+              </div>
+              <div class="form-group">
+                <label>المسؤولية / الرتبة</label>
+                <select id="clRole" class="input-field" onchange="toggleClUnit(this.value)">
+                  <option value="unit_leader">قائد وحدة</option>
+                  <option value="logistics_leader">مسؤول المال والعتاد</option>
+                  <option value="media_leader">مسؤول الإعلام والاتصال</option>
+                  <option value="sports_leader">مسؤول الرياضة والتدريب</option>
+                  <option value="community_leader">مسؤول خدمة وتنمية المجتمع</option>
+                </select>
+              </div>
+              <div class="form-group" id="clUnitBox">
+                <label>الوحدة المسندة</label>
+                <select id="clUnit" class="input-field">
+                  <option value="أشبال">أشبال</option>
+                  <option value="كشاف أول">كشاف أول</option>
+                  <option value="كشاف ثاني">كشاف ثاني</option>
+                  <option value="كشاف متقدم">كشاف متقدم</option>
+                  <option value="جوالة">جوالة</option>
+                </select>
+              </div>
+            </div>
+            <button type="submit" class="btn-main">اعتماد القائد في المنظومة</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="section-title">قائمة القادة والمسؤولين المعتمدين</div>
+          <div style="overflow-x: auto;">
+            <table>
+              <thead><tr><th>الاسم الكامل</th><th>رقم الهاتف</th><th>المسؤولية</th><th>الوحدة</th><th>إجراء</th></tr></thead>
+              <tbody id="commLeadersList"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="commScouts" class="comm-tab" style="display:none;">
+        <div class="card">
+          <div class="section-title">
+            <span>سجل منخرطي الفوج عبر كل الوحدات</span>
+            <select id="commFilterUnit" class="input-field" style="width: auto; padding: 8px 14px; font-size: 13px;" onchange="loadAllScoutsForComm()">
+              <option value="الكل">جميع الوحدات</option>
+              <option value="أشبال">أشبال</option>
+              <option value="كشاف أول">كشاف أول</option>
+              <option value="كشاف ثاني">كشاف ثاني</option>
+              <option value="كشاف متقدم">كشاف متقدم</option>
+              <option value="جوالة">جوالة</option>
+            </select>
+          </div>
+          <div style="overflow-x: auto;">
+            <table>
+              <thead><tr><th>رقم القيد</th><th>الاسم الكامل</th><th>الوحدة</th><th>المستوى الدراسي</th><th>فصيلة الدم</th><th>رقم الولي</th></tr></thead>
+              <tbody id="commAllScoutsList"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="commMeetings" class="comm-tab" style="display:none;">
+        <div class="card">
+          <div class="section-title">📅 برمجة اجتماع قيادة وإعلام القادة</div>
+          <form onsubmit="commCreateMeeting(event)">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>عنوان الاجتماع</label>
+                <input type="text" id="meetTitle" class="input-field" placeholder="اجتماع مجلس الشرف" required>
+              </div>
+              <div class="form-group">
+                <label>التاريخ والتوقيت</label>
+                <input type="datetime-local" id="meetDate" class="input-field" required>
+              </div>
+              <div class="form-group">
+                <label>مكان الاجتماع</label>
+                <input type="text" id="meetLocation" class="input-field" placeholder="مقر الفوج" required>
+              </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 16px;">
+              <label>جدول أعمال الاجتماع</label>
+              <textarea id="meetAgenda" class="input-field" rows="2" placeholder="النقاط المقررة للمناقشة..." required></textarea>
+            </div>
+            <button type="submit" class="btn-main">إرسال استدعاء الاجتماع للقادة</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="section-title">جدول الاجتماعات القادمة</div>
+          <div id="commMeetingsList"></div>
+        </div>
+      </div>
+
+      <div id="commReports" class="comm-tab" style="display:none;">
+        <div class="card">
+          <div class="section-title">📑 نشر تقرير إداري أو مالي للفوج</div>
+          <form onsubmit="commCreateReport(event)">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>عنوان التقرير</label>
+                <input type="text" id="repTitle" class="input-field" required>
+              </div>
+              <div class="form-group">
+                <label>نوع التقرير</label>
+                <select id="repType" class="input-field">
+                  <option value="تقرير دوري">تقرير دوري</option>
+                  <option value="تقرير مالي">تقرير مالي</option>
+                  <option value="تقرير نشاط خارجي">تقرير نشاط خارجي</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 16px;">
+              <label>تفاصيل ومحتوى التقرير</label>
+              <textarea id="repContent" class="input-field" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn-main">حفظ ونشر التقرير</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. لوحة قائد الوحدة (Unit Leader) -->
+    <div id="unitLeaderScreen" class="screen">
+      <div class="sub-tabs">
+        <button class="sub-tab-btn active" onclick="switchUnitTab('uScoutsList')">👥 كشافي الوحدة وبطاقاتهم</button>
+        <button class="sub-tab-btn" onclick="switchUnitTab('uAddScout')">➕ تسجيل كشاف جديد</button>
+        <button class="sub-tab-btn" onclick="switchUnitTab('uSchedule')">🕒 مواقيت الحصص للأولياء</button>
+        <button class="sub-tab-btn" onclick="switchUnitTab('uAttendance')">📋 تسجيل الحضور والغياب</button>
+      </div>
+
+      <!-- قائمة الكشافين ببطاقات تفاعلية أنيقة -->
+      <div id="uScoutsList" class="unit-tab active">
+        <div class="card">
+          <div class="section-title">سجل كشافي الوحدة (اضغط لتلوين وإدارة بطاقة التقدم)</div>
+          <div id="unitScoutsCardContainer"></div>
+        </div>
+      </div>
+
+      <!-- استمارة تسجيل كشاف جديد -->
+      <div id="uAddScout" class="unit-tab" style="display:none;">
+        <div class="card">
+          <div class="section-title">➕ استمارة تسجيل كشاف بالوحدة (شاملة)</div>
+          <form onsubmit="unitLeaderAddScout(event)">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>الاسم الكامل للكشاف</label>
+                <input type="text" id="scFullName" class="input-field" required>
+              </div>
+              <div class="form-group">
+                <label>سنة الميلاد</label>
+                <input type="number" id="scBirthYear" class="input-field" placeholder="2012" required>
+              </div>
+              <div class="form-group">
+                <label>المستوى الدراسي</label>
+                <input type="text" id="scSchoolLevel" class="input-field" placeholder="أولى متوسط">
+              </div>
+              <div class="form-group">
+                <label>اسم المؤسسة التعليمية</label>
+                <input type="text" id="scSchoolName" class="input-field" placeholder="متوسطة...">
+              </div>
+              <div class="form-group">
+                <label>فصيلة الدم</label>
+                <select id="scBlood" class="input-field">
+                  <option value="O+">O+</option>
+                  <option value="A+">A+</option>
+                  <option value="B+">B+</option>
+                  <option value="AB+">AB+</option>
+                  <option value="O-">O-</option>
+                  <option value="A-">A-</option>
+                  <option value="غير محدد">غير محدد</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>هل يجيد السباحة؟</label>
+                <select id="scSwim" class="input-field">
+                  <option value="false">لا يجيد السباحة</option>
+                  <option value="true">يجيد السباحة</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>اسم الولي الكامل</label>
+                <input type="text" id="scPName" class="input-field" required>
+              </div>
+              <div class="form-group">
+                <label>رقم هاتف الولي (لربط حسابه)</label>
+                <input type="tel" id="scPPhone" class="input-field" required dir="ltr" style="text-align:left;">
+              </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 16px;">
+              <label>حساسيات أو أمراض مزمنة أو أدوية للطوارئ</label>
+              <input type="text" id="scMedicalNotes" class="input-field" placeholder="سليم...">
+            </div>
+            <button type="submit" class="btn-main">حفظ ملف الكشاف في السحابة</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- مواقيت الحصص -->
+      <div id="uSchedule" class="unit-tab" style="display:none;">
+        <div class="card">
+          <div class="section-title">🕒 برمجة حصة أسبوعية / نشاط ميداني للأولياء</div>
+          <form onsubmit="unitLeaderAddSession(event)">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>عنوان الحصة / النشاط</label>
+                <input type="text" id="sesTitle" class="input-field" placeholder="حصة تدريبية" required>
+              </div>
+              <div class="form-group">
+                <label>تاريخ الحصة</label>
+                <input type="date" id="sesDate" class="input-field" required>
+              </div>
+              <div class="form-group">
+                <label>وقت البداية</label>
+                <input type="time" id="sesStart" class="input-field" required>
+              </div>
+              <div class="form-group">
+                <label>وقت النهاية</label>
+                <input type="time" id="sesEnd" class="input-field" required>
+              </div>
+              <div class="form-group">
+                <label>المكان / نقطة التجمع</label>
+                <input type="text" id="sesLoc" class="input-field" placeholder="مقر الفوج" required>
+              </div>
+              <div class="form-group">
+                <label>اللوازم والعتاد المطلوب من الطفل</label>
+                <input type="text" id="sesGear" class="input-field" placeholder="دفتر كشفي...">
+              </div>
+            </div>
+            <button type="submit" class="btn-main">نشر التوقيت ليظهر للأولياء</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="section-title">الحصص المبرمجة لوحدتك</div>
+          <div id="unitScheduleList"></div>
+        </div>
+      </div>
+
+      <!-- تسجيل الحضور بلمسات ملونة سلسة -->
+      <div id="uAttendance" class="unit-tab" style="display:none;">
+        <div class="card">
+          <div class="section-title">
+            <span>تسجيل حضور الحصة الميدانية</span>
+            <input type="date" id="attSessionDate" class="input-field" style="width: auto; padding: 8px 14px; font-size: 13px;">
+          </div>
+          <div id="unitAttendanceCardsContainer"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. مسؤول المال والعتاد -->
+    <div id="logisticsScreen" class="screen">
+      <div class="card">
+        <div class="section-title">➕ جرد قطعة عتاد جديدة في المخزن</div>
+        <form onsubmit="addInventoryItem(event)">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>اسم العتاد</label>
+              <input type="text" id="invName" class="input-field" required>
+            </div>
+            <div class="form-group">
+              <label>التصنيف</label>
+              <select id="invCat" class="input-field">
+                <option value="خيام وتخييم">خيام وتخييم</option>
+                <option value="أدوات وورشات">أدوات وورشات</option>
+                <option value="صوتيات وإلكترونيات">صوتيات وإلكترونيات</option>
+                <option value="مطبخ وأواني">مطبخ وأواني</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>الكمية الكلية</label>
+              <input type="number" id="invQty" class="input-field" value="1" min="1" required>
+            </div>
+            <div class="form-group">
+              <label>الحالة التشغيلية</label>
+              <select id="invCond" class="input-field">
+                <option value="سليم وجاهز">سليم وجاهز</option>
+                <option value="يحتاج صيانة عاجلة">يحتاج صيانة عاجلة</option>
+                <option value="تالف">تالف</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn-main">حفظ في سجل الجرد</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="section-title">سجل جرد عتاد الفوج</div>
+        <div style="overflow-x: auto;">
+          <table>
+            <thead><tr><th>العتاد</th><th>الصنف</th><th>الكمية</th><th>الحالة</th><th>حذف</th></tr></thead>
+            <tbody id="inventoryTableList"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. خدمة المجتمع -->
+    <div id="communityScreen" class="screen">
+      <div class="card">
+        <div class="section-title">➕ برمجة مشروع في خدمة وتنمية المجتمع</div>
+        <form onsubmit="addCommunityProject(event)">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>عنوان المشروع</label>
+              <input type="text" id="comTitle" class="input-field" required>
+            </div>
+            <div class="form-group">
+              <label>نوع الخدمة</label>
+              <select id="comType" class="input-field">
+                <option value="حملة تشجير">حملة تشجير</option>
+                <option value="تنظيف البيئة">تنظيف البيئة</option>
+                <option value="تبرع بالدم">تبرع بالدم</option>
+                <option value="توزيع طرود">توزيع طرود</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>تاريخ التنفيذ</label>
+              <input type="date" id="comDate" class="input-field" required>
+            </div>
+            <div class="form-group">
+              <label>المكان الميداني</label>
+              <input type="text" id="comLocation" class="input-field" required>
+            </div>
+          </div>
+          <button type="submit" class="btn-main">اعتماد المشروع المجتمعي</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="section-title">المشاريع المجتمعية المبرمجة</div>
+        <div id="communityProjectsList"></div>
+      </div>
+    </div>
+
+    <!-- 6. الإعلام -->
+    <div id="mediaScreen" class="screen">
+      <div class="card">
+        <div class="section-title">📢 نشر نشيد أو نشاط للأولياء</div>
+        <form onsubmit="addMediaPost(event)">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>العنوان</label>
+              <input type="text" id="medTitle" class="input-field" required>
+            </div>
+            <div class="form-group">
+              <label>النوع</label>
+              <select id="medCat" class="input-field">
+                <option value="نشيد كشفي">نشيد كشفي</option>
+                <option value="ألبوم صور">ألبوم صور</option>
+                <option value="فيديو توثيقي">فيديو توثيقي</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label>رابط المحتوى (URL)</label>
+            <input type="url" id="medUrl" class="input-field" required dir="ltr">
+          </div>
+          <button type="submit" class="btn-main">نشر المحتوى ليظهر للأولياء</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="section-title">المكتبة الإعلامية الحالية</div>
+        <div id="mediaList"></div>
+      </div>
+    </div>
+
+    <!-- 7. الرياضة -->
+    <div id="sportsScreen" class="screen">
+      <div class="card">
+        <div class="section-title">🏃 برمجة حصة تدريب بدني</div>
+        <form onsubmit="addSportsSession(event)">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>الوحدة المستهدفة</label>
+              <select id="spTarget" class="input-field">
+                <option value="الكل">كل الوحدات</option>
+                <option value="أشبال">أشبال</option>
+                <option value="كشاف أول">كشاف أول</option>
+                <option value="كشاف ثاني">كشاف ثاني</option>
+                <option value="كشاف متقدم">كشاف متقدم</option>
+                <option value="جوالة">جوالة</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>التاريخ والتوقيت</label>
+              <input type="datetime-local" id="spDate" class="input-field" required>
+            </div>
+            <div class="form-group">
+              <label>المكان (الملعب / الغابة)</label>
+              <input type="text" id="spLoc" class="input-field" required>
+            </div>
+          </div>
+          <button type="submit" class="btn-main">إرسال التنبيه الرياضي للأولياء</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="section-title">الحصص الرياضية المجدولة</div>
+        <div id="sportsList"></div>
+      </div>
+    </div>
+
+    <!-- 8. واجهة أولياء الأمور -->
+    <div id="parentScreen" class="screen">
+      <div class="card">
+        <div class="section-title">👦 ملفات أبنائي المنخرطين في الفوج</div>
+        <div id="parentScoutsList"></div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">🕒 مواقيت الحصص الأسبوعية لأبنائي</div>
+        <div id="parentSessionsSchedule"></div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">🏃 التنبيهات الرياضية الميدانية</div>
+        <div id="parentSportsList"></div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">📻 الأناشيد والصور المنشورة</div>
+        <div id="parentMediaList"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- نافذة بطاقة التقدم والشارات للكشاف -->
+  <div id="progressModal" class="modal">
+    <div class="modal-content">
+      <div class="section-title">
+        <span id="modalScoutName">بطاقة التقدم والتدرج الكشفي</span>
+        <button class="btn-sub" onclick="closeProgressModal()">✕ إغلاق</button>
+      </div>
+      <form onsubmit="saveScoutBadge(event)">
+        <input type="hidden" id="modalScoutId">
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label>المرتبة الكشفية المحققة</label>
+          <select id="badgeRank" class="input-field">
+            <option value="مبتدئ">مبتدئ</option>
+            <option value="مرتبة ثانية">مرتبة ثانية</option>
+            <option value="مرتبة أولى">مرتبة أولى</option>
+            <option value="كشاف متقدم مؤهل">كشاف متقدم مؤهل</option>
+            <option value="كشاف وطني">كشاف وطني</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label>اسم الشارة الممنوحة</label>
+          <input type="text" id="badgeName" class="input-field" placeholder="شارة الإسعاف، الملاحة، الريادة..." required>
+        </div>
+        <button type="submit" class="btn-main">إسناد الشارة وحفظها</button>
+      </form>
+      <div style="margin-top: 18px;" id="modalBadgesHistory"></div>
+    </div>
+  </div>
+
+  <script>
+    // تهيئة الاتصال بـ Supabase
+    const SUPABASE_URL = "https://hllcxtgwuckzyhcfowau.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_yra8fBIbgvC3nZZTO2YTCA_f8MIUEQk";
+    
+    let client = null;
+    try {
+      if (typeof supabase !== 'undefined') {
+        client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      }
+    } catch(err) {
+      console.warn("Supabase init error:", err);
+    }
+
+    let currentUser = null;
+
+    if (document.getElementById('attSessionDate')) {
+      document.getElementById('attSessionDate').valueAsDate = new Date();
+    }
+
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      const target = document.getElementById(screenId);
+      if (target) target.classList.add('active');
+      document.getElementById('logoutBtn').style.display = (screenId === 'loginScreen') ? 'none' : 'block';
+    }
+
+    function switchCommTab(tabId) {
+      document.querySelectorAll('.comm-tab').forEach(t => t.style.display = 'none');
+      document.querySelectorAll('.sub-tabs .sub-tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).style.display = 'block';
+      if (event && event.target) event.target.classList.add('active');
+      if (tabId === 'commScouts') loadAllScoutsForComm();
+      if (tabId === 'commMeetings') loadCommMeetings();
+    }
+
+    function switchUnitTab(tabId) {
+      document.querySelectorAll('.unit-tab').forEach(t => t.style.display = 'none');
+      document.querySelectorAll('#unitLeaderScreen .sub-tabs .sub-tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).style.display = 'block';
+      if (event && event.target) event.target.classList.add('active');
+      if (tabId === 'uScoutsList') loadUnitScouts();
+      if (tabId === 'uSchedule') loadUnitSchedule();
+      if (tabId === 'uAttendance') loadUnitAttendanceList();
+    }
+
+    function toggleClUnit(role) {
+      document.getElementById('clUnitBox').style.display = (role === 'unit_leader') ? 'block' : 'none';
+    }
+
+    // تسجيل الدخول مع الحماية ضد التجمد
+    async function handleLogin(e) {
+      e.preventDefault();
+      const phone = document.getElementById('userPhone').value.trim();
+      const pass = document.getElementById('userPass').value.trim();
+      const btn = document.getElementById('submitLoginBtn');
+
+      btn.disabled = true;
+      btn.innerHTML = "<span>جاري التحقق والدخول...</span>";
+
+      // وضع الطوارئ للمحافظ العام إذا تعذر الاتصال المباشر بالسحابة
+      if (phone === '0550000000' && pass === '123456') {
+        currentUser = {
+          id: 'commissioner_root',
+          full_name: 'المحافظ العام',
+          role: 'commissioner',
+          phone: '0550000000'
+        };
+        document.getElementById('navRole').textContent = "المحافظ العام (القيادة العامة)";
+        showScreen('commissionerScreen');
+        if (client) loadCommLeaders();
+        btn.disabled = false;
+        btn.innerHTML = "<span>تسجيل الدخول للمنظومة</span>";
+        return;
+      }
+
+      if (!client) {
+        alert("تنبيه: تعذر الاتصال بالسحابة. يرجى التأكد من تشغيل الرابط عبر الإنترنت.");
+        btn.disabled = false;
+        btn.innerHTML = "<span>تسجيل الدخول للمنظومة</span>";
+        return;
+      }
+
+      try {
+        const { data: user, error } = await client
+          .from('profiles')
+          .select('*')
+          .eq('phone', phone)
+          .eq('password', pass)
+          .single();
+
+        if (error || !user) {
+          alert('رقم الهاتف أو كلمة المرور غير صحيحة.');
+        } else {
+          currentUser = user;
+          document.getElementById('navRole').textContent = `${user.full_name} (${user.assigned_unit || user.role})`;
+          routeUser(user);
+        }
+      } catch (err) {
+        alert("خطأ أثناء الاتصال: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = "<span>تسجيل الدخول للمنظومة</span>";
+      }
+    }
+
+    function routeUser(user) {
+      switch (user.role) {
+        case 'commissioner':
+          showScreen('commissionerScreen');
+          loadCommLeaders();
+          break;
+        case 'unit_leader':
+          showScreen('unitLeaderScreen');
+          loadUnitScouts();
+          break;
+        case 'logistics_leader':
+          showScreen('logisticsScreen');
+          loadInventory();
+          break;
+        case 'community_leader':
+          showScreen('communityScreen');
+          loadCommunityProjects();
+          break;
+        case 'media_leader':
+          showScreen('mediaScreen');
+          loadMedia();
+          break;
+        case 'sports_leader':
+          showScreen('sportsScreen');
+          loadSports();
+          break;
+        case 'parent':
+        default:
+          showScreen('parentScreen');
+          loadParentDashboard(user.phone);
+          break;
+      }
+    }
+
+    // دوال المحافظ العام
+    async function loadCommLeaders() {
+      if (!client) return;
+      const { data: leaders } = await client.from('profiles').select('*').order('created_at', { ascending: false });
+      const tbody = document.getElementById('commLeadersList');
+      if (!leaders || leaders.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="empty-state">لا يوجد قادة مسجلون حتى الآن.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = leaders.map(l => `
+        <tr>
+          <td style="font-weight:700;">${l.full_name}</td>
+          <td dir="ltr" style="text-align:right;">${l.phone}</td>
+          <td><span class="badge badge-ok">${l.role}</span></td>
+          <td>${l.assigned_unit || '-'}</td>
+          <td><button class="btn-sub" onclick="deleteProfile('${l.id}')" style="color:#ef4444;">حذف</button></td>
+        </tr>
+      `).join('');
+    }
+
+    async function commCreateLeader(e) {
+      e.preventDefault();
+      if (!client) return;
+      const role = document.getElementById('clRole').value;
+      const unit = (role === 'unit_leader') ? document.getElementById('clUnit').value : null;
+
+      const { error } = await client.from('profiles').insert([{
+        full_name: document.getElementById('clName').value.trim(),
+        phone: document.getElementById('clPhone').value.trim(),
+        password: '123456',
+        role: role,
+        assigned_unit: unit
+      }]);
+
+      if (error) alert('خطأ: ' + error.message);
+      else {
+        alert('تم اعتماد القائد بنجاح!');
+        document.getElementById('clName').value = '';
+        document.getElementById('clPhone').value = '';
+        loadCommLeaders();
+      }
+    }
+
+    async function deleteProfile(id) {
+      if (!client) return;
+      if (confirm('هل أنت متأكد من حذف هذا الحساب؟')) {
+        await client.from('profiles').delete().eq('id', id);
+        loadCommLeaders();
+      }
+    }
+
+    async function loadAllScoutsForComm() {
+      if (!client) return;
+      const filter = document.getElementById('commFilterUnit').value;
+      let query = client.from('scouts').select('*').order('created_at', { ascending: false });
+      if (filter !== 'الكل') query = query.eq('unit_type', filter);
+
+      const { data: scouts } = await query;
+      const tbody = document.getElementById('commAllScoutsList');
+      if (!scouts || scouts.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="empty-state">لا يوجد كشافين في هذا القسم.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = scouts.map(s => `
+        <tr>
+          <td style="font-weight:700;">${s.registration_number}</td>
+          <td>${s.full_name}</td>
+          <td><span class="badge badge-ok">${s.unit_type}</span></td>
+          <td>${s.academic_level || '-'}</td>
+          <td>${s.blood_group}</td>
+          <td dir="ltr" style="text-align:right;">${s.parent_phone}</td>
+        </tr>
+      `).join('');
+    }
+
+    async function commCreateMeeting(e) {
+      e.preventDefault();
+      if (!client) return;
+      const { error } = await client.from('leader_meetings').insert([{
+        title: document.getElementById('meetTitle').value,
+        meeting_date: document.getElementById('meetDate').value,
+        location: document.getElementById('meetLocation').value,
+        agenda: document.getElementById('meetAgenda').value,
+        created_by: currentUser.id
+      }]);
+      if (error) alert('خطأ: ' + error.message);
+      else {
+        alert('تمت جدولة الاجتماع بنجاح!');
+        loadCommMeetings();
+      }
+    }
+
+    async function loadCommMeetings() {
+      if (!client) return;
+      const { data } = await client.from('leader_meetings').select('*').order('meeting_date', { ascending: false });
+      const box = document.getElementById('commMeetingsList');
+      if (!data || data.length === 0) {
+        box.innerHTML = '<p class="empty-state">لا توجد اجتماعات مبرمجة حالياً.</p>';
+        return;
+      }
+      box.innerHTML = data.map(m => `
+        <div class="interactive-item-card">
+          <h4 style="color:var(--primary-dark); font-size:14px; font-weight:800;">${m.title}</h4>
+          <p style="font-size:12px; color:#64748b; margin:6px 0;">التاريخ: ${m.meeting_date.replace('T', ' ')} | المكان: ${m.location}</p>
+          <p style="font-size:12px; color:#334155;"><b>جدول الأعمال:</b> ${m.agenda}</p>
+        </div>
+      `).join('');
+    }
+
+    async function commCreateReport(e) {
+      e.preventDefault();
+      if (!client) return;
+      await client.from('commissioner_reports').insert([{
+        title: document.getElementById('repTitle').value,
+        report_type: document.getElementById('repType').value,
+        content: document.getElementById('repContent').value,
+        created_by: currentUser.id
+      }]);
+      alert('تم حفظ التقرير بنجاح!');
+      document.getElementById('repTitle').value = '';
+      document.getElementById('repContent').value = '';
+    }
+
+    // دوال قائد الوحدة: بطاقات كشافين تفاعلية تتلون عند الضغط
+    async function loadUnitScouts() {
+      if (!client) return;
+      const { data: scouts } = await client.from('scouts').select('*').eq('unit_type', currentUser.assigned_unit).order('created_at', { ascending: false });
+      const container = document.getElementById('unitScoutsCardContainer');
+      if (!scouts || scouts.length === 0) {
+        container.innerHTML = '<p class="empty-state">لم تقم بتسجيل أي كشاف في وحدتك بعد.</p>';
+        return;
+      }
+      container.innerHTML = scouts.map(s => `
+        <div class="scout-card" onclick="openProgressModal('${s.id}', '${s.full_name}')">
+          <div class="scout-header">
+            <div class="scout-info-main">
+              <div class="scout-avatar">${s.full_name.charAt(0)}</div>
+              <div>
+                <h4 style="font-size: 15px; font-weight: 800; color: var(--primary-dark);">${s.full_name}</h4>
+                <div style="font-size: 12px; color: #64748b; margin-top: 2px;">رقم القيد: <b>${s.registration_number}</b> | المستوى: ${s.academic_level || 'متمدرس'}</div>
+              </div>
+            </div>
+            <button class="btn-sub" style="color:var(--primary-forest); font-weight:800; border-color:var(--accent-gold);">🎖️ البطاقة</button>
+          </div>
+          <div class="scout-badges-row">
+            <span class="badge badge-warn">🩸 ${s.blood_group}</span>
+            <span class="badge badge-ok">🏊 ${s.can_swim ? 'يجيد السباحة' : 'لا يجيد'}</span>
+            <span class="badge badge-info">🩺 ${s.medical_notes || 'سليم'}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function unitLeaderAddScout(e) {
+      e.preventDefault();
+      if (!client) return;
+      const pPhone = document.getElementById('scPPhone').value.trim();
+      const pName = document.getElementById('scPName').value.trim();
+
+      const newScout = {
+        registration_number: 'DZ-' + Math.floor(1000 + Math.random() * 9000),
+        full_name: document.getElementById('scFullName').value.trim(),
+        birth_year: parseInt(document.getElementById('scBirthYear').value),
+        academic_level: document.getElementById('scSchoolLevel').value.trim(),
+        school_name: document.getElementById('scSchoolName').value.trim(),
+        blood_group: document.getElementById('scBlood').value,
+        can_swim: (document.getElementById('scSwim').value === 'true'),
+        medical_notes: document.getElementById('scMedicalNotes').value.trim(),
+        unit_type: currentUser.assigned_unit,
+        parent_name: pName,
+        parent_phone: pPhone,
+        registered_by: currentUser.id
+      };
+
+      const { error } = await client.from('scouts').insert([newScout]);
+      if (error) {
+        alert('خطأ أثناء حفظ الكشاف: ' + error.message);
+        return;
+      }
+
+      await client.from('profiles').upsert([{
+        phone: pPhone,
+        password: '123456',
+        full_name: pName,
+        role: 'parent'
+      }], { onConflict: 'phone' });
+
+      alert('تم تسجيل الكشاف وتفعيل حساب ولي أمره بنجاح!');
+      switchUnitTab('uScoutsList');
+    }
+
+    async function unitLeaderAddSession(e) {
+      e.preventDefault();
+      if (!client) return;
+      const { error } = await client.from('sessions_schedule').insert([{
+        unit_type: currentUser.assigned_unit,
+        session_title: document.getElementById('sesTitle').value,
+        session_date: document.getElementById('sesDate').value,
+        start_time: document.getElementById('sesStart').value,
+        end_time: document.getElementById('sesEnd').value,
+        location: document.getElementById('sesLoc').value,
+        required_gear: document.getElementById('sesGear').value,
+        created_by: currentUser.id
+      }]);
+      if (error) alert('خطأ: ' + error.message);
+      else {
+        alert('تم نشر مواقيت الحصة بنجاح!');
+        loadUnitSchedule();
+      }
+    }
+
+    async function loadUnitSchedule() {
+      if (!client) return;
+      const { data } = await client.from('sessions_schedule').select('*').eq('unit_type', currentUser.assigned_unit).order('session_date', { ascending: false });
+      const box = document.getElementById('unitScheduleList');
+      if (!data || data.length === 0) {
+        box.innerHTML = '<p class="empty-state">لا توجد حصص مبرمجة حالياً.</p>';
+        return;
+      }
+      box.innerHTML = data.map(s => `
+        <div class="interactive-item-card">
+          <h4 style="color:var(--primary-dark); font-size:14px; font-weight:800;">${s.session_title}</h4>
+          <p style="font-size:12px; color:#64748b; margin:4px 0;">التاريخ: ${s.session_date} | التوقيت: من ${s.start_time} إلى ${s.end_time}</p>
+          <p style="font-size:12px; color:#334155;"><b>المكان:</b> ${s.location} | <b>اللوازم:</b> ${s.required_gear || 'بدون عتاد خاص'}</p>
+        </div>
+      `).join('');
+    }
+
+    // تسجيل الحضور ببطاقات تفاعلية تتلون فور النقر
+    async function loadUnitAttendanceList() {
+      if (!client) return;
+      const { data: scouts } = await client.from('scouts').select('*').eq('unit_type', currentUser.assigned_unit);
+      const container = document.getElementById('unitAttendanceCardsContainer');
+      if (!scouts || scouts.length === 0) {
+        container.innerHTML = '<p class="empty-state">سجل كشافين أولاً لتأخذ الحضور.</p>';
+        return;
+      }
+      container.innerHTML = scouts.map(s => `
+        <div class="scout-card" id="att-card-${s.id}">
+          <div class="scout-header">
+            <div class="scout-info-main">
+              <div class="scout-avatar">${s.full_name.charAt(0)}</div>
+              <div>
+                <h4 style="font-size: 14px; font-weight: 800;">${s.full_name}</h4>
+                <div id="att-badge-${s.id}" style="margin-top: 3px;"><span class="badge badge-warn">لم يُسجل بعد</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="attendance-btn-group">
+            <button class="att-btn att-btn-present" onclick="recordAttendance('${s.id}', 'present')">✅ حاضر</button>
+            <button class="att-btn att-btn-absent" onclick="recordAttendance('${s.id}', 'absent')">❌ غائب</button>
+            <button class="att-btn att-btn-excused" onclick="recordAttendance('${s.id}', 'excused')">⚠️ معذور</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function recordAttendance(scoutId, status) {
+      if (!client) return;
+      const date = document.getElementById('attSessionDate').value;
+      await client.from('attendance').upsert([{
+        scout_id: scoutId,
+        session_date: date,
+        status: status,
+        unit_type: currentUser.assigned_unit,
+        recorded_by: currentUser.id
+      }], { onConflict: 'scout_id,session_date' });
+
+      const badgeBox = document.getElementById(`att-badge-${scoutId}`);
+      const card = document.getElementById(`att-card-${scoutId}`);
+
+      if (status === 'present') {
+        badgeBox.innerHTML = '<span class="badge badge-ok">حاضر ✅</span>';
+        card.style.borderColor = '#10b981';
+        card.style.backgroundColor = '#f0fdf4';
+      } else if (status === 'absent') {
+        badgeBox.innerHTML = '<span class="badge badge-err">غائب ❌</span>';
+        card.style.borderColor = '#ef4444';
+        card.style.backgroundColor = '#fef2f2';
+      } else {
+        badgeBox.innerHTML = '<span class="badge badge-warn">معذور ⚠️</span>';
+        card.style.borderColor = '#f59e0b';
+        card.style.backgroundColor = '#fffbeb';
+      }
+    }
+
+    // بطاقة التقدم
+    async function openProgressModal(scoutId, scoutName) {
+      document.getElementById('modalScoutId').value = scoutId;
+      document.getElementById('modalScoutName').textContent = `بطاقة تقدم: ${scoutName}`;
+      document.getElementById('progressModal').classList.add('active');
+      loadBadgesHistory(scoutId);
+    }
+
+    function closeProgressModal() {
+      document.getElementById('progressModal').classList.remove('active');
+    }
+
+    async function saveScoutBadge(e) {
+      e.preventDefault();
+      if (!client) return;
+      const scoutId = document.getElementById('modalScoutId').value;
+      const rank = document.getElementById('badgeRank').value;
+      const badge = document.getElementById('badgeName').value.trim();
+
+      await client.from('progress_cards').insert([{
+        scout_id: scoutId,
+        rank_level: rank,
+        badge_name: badge,
+        assigned_by: currentUser.id
+      }]);
+      alert('تم إسناد الشارة بنجاح!');
+      document.getElementById('badgeName').value = '';
+      loadBadgesHistory(scoutId);
+    }
+
+    async function loadBadgesHistory(scoutId) {
+      if (!client) return;
+      const { data } = await client.from('progress_cards').select('*').eq('scout_id', scoutId);
+      const box = document.getElementById('modalBadgesHistory');
+      if (!data || data.length === 0) {
+        box.innerHTML = '<p class="empty-state">لا توجد شارات مسندة حالياً.</p>';
+        return;
+      }
+      box.innerHTML = data.map(b => `
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:10px 14px; border-radius:10px; margin-bottom:6px; font-size:12px; font-weight:700;">
+          🎖️ <b>${b.badge_name}</b> (${b.rank_level})
+        </div>
+      `).join('');
+    }
+
+    // دوال العتاد والمجتمع والإعلام والرياضة
+    async function addInventoryItem(e) {
+      e.preventDefault();
+      if (!client) return;
+      await client.from('inventory').insert([{
+        item_name: document.getElementById('invName').value,
+        category: document.getElementById('invCat').value,
+        total_quantity: parseInt(document.getElementById('invQty').value),
+        condition: document.getElementById('invCond').value,
+        updated_by: currentUser.id
+      }]);
+      alert('تم حفظ العتاد في سجل الجرد!');
+      loadInventory();
+    }
+
+    async function loadInventory() {
+      if (!client) return;
+      const { data } = await client.from('inventory').select('*').order('created_at', { ascending: false });
+      const tbody = document.getElementById('inventoryTableList');
+      if (!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="empty-state">سجل العتاد فارغ حالياً.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(i => `
+        <tr>
+          <td style="font-weight:700;">${i.item_name}</td>
+          <td>${i.category}</td>
+          <td>${i.total_quantity}</td>
+          <td><span class="badge ${i.condition === 'سليم وجاهز' ? 'badge-ok' : 'badge-err'}">${i.condition}</span></td>
+          <td><button class="btn-sub" onclick="deleteInventory('${i.id}')" style="color:#ef4444;">حذف</button></td>
+        </tr>
+      `).join('');
+    }
+
+    async function deleteInventory(id) {
+      if (!client) return;
+      await client.from('inventory').delete().eq('id', id);
+      loadInventory();
+    }
+
+    async function addCommunityProject(e) {
+      e.preventDefault();
+      if (!client) return;
+      await client.from('community_service').insert([{
+        project_title: document.getElementById('comTitle').value,
+        project_type: document.getElementById('comType').value,
+        execution_date: document.getElementById('comDate').value,
+        location: document.getElementById('comLocation').value,
+        created_by: currentUser.id
+      }]);
+      alert('تم اعتماد المشروع المجتمعي بنجاح!');
+      loadCommunityProjects();
+    }
+
+    async function loadCommunityProjects() {
+      if (!client) return;
+      const { data } = await client.from('community_service').select('*').order('execution_date', { ascending: false });
+      const box = document.getElementById('communityProjectsList');
+      if (!data || data.length === 0) {
+        box.innerHTML = '<p class="empty-state">لا توجد مشاريع مجتمعية مسجلة.</p>';
+        return;
+      }
+      box.innerHTML = data.map(p => `
+        <div class="interactive-item-card">
+          <h4 style="color:var(--primary-dark); font-size:14px; font-weight:800;">${p.project_title} (${p.project_type})</h4>
+          <p style="font-size:12px; color:#64748b; margin-top:4px;">موعد التنفيذ: ${p.execution_date} في ${p.location}</p>
+        </div>
+      `).join('');
+    }
+
+    async function addMediaPost(e) {
+      e.preventDefault();
+      if (!client) return;
+      await client.from('media_posts').insert([{
+        title: document.getElementById('medTitle').value,
+        category: document.getElementById('medCat').value,
+        media_url: document.getElementById('medUrl').value,
+        published_by: currentUser.id
+      }]);
+      alert('تم نشر المحتوى للأولياء بنجاح!');
+      loadMedia();
+    }
+
+    async function loadMedia() {
+      if (!client) return;
+      const { data } = await client.from('media_posts').select('*').order('created_at', { ascending: false });
+      const box = document.getElementById('mediaList');
+      if (!data || data.length === 0) {
+        box.innerHTML = '<p class="empty-state">لا توجد منشورات إعلامية بعد.</p>';
+        return;
+      }
+      box.innerHTML = data.map(m => `
+        <div class="interactive-item-card">
+          <b style="font-size:14px;">${m.title}</b> (${m.category}) - <a href="${m.media_url}" target="_blank" style="color:var(--primary-forest); font-weight:700;">فتح الرابط</a>
+        </div>
+      `).join('');
+    }
+
+    async function addSportsSession(e) {
+      e.preventDefault();
+      if (!client) return;
+      await client.from('sports_sessions').insert([{
+        target_unit: document.getElementById('spTarget').value,
+        session_date: document.getElementById('spDate').value,
+        location: document.getElementById('spLoc').value,
+        announced_by: currentUser.id
+      }]);
+      alert('تمت جدولة الحصة الرياضية بنجاح!');
+      loadSports();
+    }
+
+    async function loadSports() {
+      if (!client) return;
+      const { data } = await client.from('sports_sessions').select('*').order('session_date', { ascending: false });
+      const box = document.getElementById('sportsList');
+      if (!data || data.length === 0) {
+        box.innerHTML = '<p class="empty-state">لا توجد حصص رياضية مجدولة.</p>';
+        return;
+      }
+      box.innerHTML = data.map(s => `
+        <div class="interactive-item-card">
+          <b>وحدة ${s.target_unit}:</b> في ${s.location} بتأريخ ${s.session_date.replace('T', ' ')}
+        </div>
+      `).join('');
+    }
+
+    // واجهة الأولياء
+    async function loadParentDashboard(phone) {
+      if (!client) return;
+      const { data: scouts } = await client.from('scouts').select('*').eq('parent_phone', phone);
+      const box = document.getElementById('parentScoutsList');
+      if (!scouts || scouts.length === 0) {
+        box.innerHTML = '<p class="empty-state">لم يتم تسجيل أي كشاف مرتبط برقم هاتفك بعد.</p>';
+        return;
+      }
+      box.innerHTML = scouts.map(s => `
+        <div class="scout-card">
+          <div class="scout-header">
+            <div class="scout-info-main">
+              <div class="scout-avatar">${s.full_name.charAt(0)}</div>
+              <div>
+                <h4 style="color:var(--primary-dark); font-size:15px; font-weight:800;">${s.full_name} (${s.unit_type})</h4>
+                <div style="font-size:12px; color:#64748b; margin-top:2px;">رقم القيد: <b>${s.registration_number}</b> | المستوى: ${s.academic_level || 'متمدرس'}</div>
+              </div>
+            </div>
+          </div>
+          <div class="scout-badges-row">
+            <span class="badge badge-warn">🩸 ${s.blood_group}</span>
+            <span class="badge badge-info">🩺 ${s.medical_notes || 'سليم'}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function logout() {
+      currentUser = null;
+      showScreen('loginScreen');
+      document.getElementById('userPhone').value = '0550000000';
+      document.getElementById('userPass').value = '123456';
+    }
+  </script>
+</body>
+</html>
